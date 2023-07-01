@@ -88,6 +88,7 @@ tremL5 = Trem(3, 3, [
     Vagao(2, Comprimento.CURTO, FormatosVagao.DUPLO_RETANGULO_ABERTO, 1, FormatosCarga.TRIANGULO),
 ], Direcao.LESTE)
 
+
 def converter_dados(trem: Trem):
     # Converter a direção para -1 (oeste) ou 1 (leste)
     direcao_numerica = trem.direcao
@@ -106,30 +107,24 @@ def converter_dados(trem: Trem):
     # Retornar a lista de vagoes numericos e a direção numerica
     return vagoes_numerico, direcao_numerica
 
-vagoes_numerico, direcao_numerica = converter_dados(tremL1)
-vagoes_teste, direcao_teste = converter_dados(tremL2)
 
-# print(vagoes_numerico)  # [[2, 1, 2, 1, 1], [3, 2, 2, 1, 2], [2, 1, 9, 1, 4], [2, 2, 2, 3, 5]]
-# print(direcao_numerica)  # 1
+# Converter os dados para o formato numérico
+vagoes_numerico_L1, direcao_numerica_L1 = converter_dados(tremL1)
+vagoes_numerico_L2, direcao_numerica_L2 = converter_dados(tremL2)
+vagoes_numerico_L3, direcao_numerica_L3 = converter_dados(tremL3)
+vagoes_numerico_L4, direcao_numerica_L4 = converter_dados(tremL4)
+vagoes_numerico_L5, direcao_numerica_L5 = converter_dados(tremL5)
 
-modelo = keras.Sequential([
-    keras.layers.Dense(16, activation='relu', input_shape=(6,)),
-    keras.layers.Dense(8, activation='relu'),
-    keras.layers.Dense(1, activation='tanh')
-])
+# Concatenar as amostras de trem
+vagoes_numerico = np.concatenate((vagoes_numerico_L1, vagoes_numerico_L2, vagoes_numerico_L3, vagoes_numerico_L4, vagoes_numerico_L5))
+direcao_numerica = [direcao_numerica_L1, direcao_numerica_L2, direcao_numerica_L3, direcao_numerica_L4, direcao_numerica_L5]
 
-# Compilar o modelo
-modelo.compile(optimizer='adam', loss='mse')
+# Convertendo para arrays numpy
+vagoes_numerico = np.array(vagoes_numerico)
+direcao_numerica = np.array(direcao_numerica)
 
-# Treinar o modelo
-modelo.fit(vagoes_numerico, direcao_numerica, epochs=100, batch_size=1)
-
-# resultado_teste = modelo.predict(vagoes_teste)
-
-# # Converter a saída em "leste" ou "oeste"
-# resultado_teste = np.where(resultado_teste > 0, 'leste', 'oeste')
-
-# # Comparar com a direção real
-# acuracia = np.mean(resultado_teste == direcao_teste)
-
-# print("Acurácia:", acuracia)
+# Imprimir os dados convertidos
+print("Vagoes numéricos:")
+print(vagoes_numerico)
+print("Direção numérica:")
+print(direcao_numerica)
