@@ -1,6 +1,3 @@
-import numpy as np
-from tensorflow import keras
-
 class FormatosVagao:
     RETANGULO_FECHADO = 1
     RETANGULO_ABERTO = 2
@@ -54,46 +51,10 @@ class Trem:
         self.direcao = direcao
 
 
-# Trens de treinamento
-# Trens indo para leste
-tremL1 = Trem(4, 4, [
-    Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.CIRCULO),
-    Vagao(3, Comprimento.LONGO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.HEXAGONO),
-    Vagao(2, Comprimento.CURTO, FormatosVagao.TOPO_TRIANGULAR_FECHADO, 1, FormatosCarga.TRIANGULO),
-    Vagao(2, Comprimento.LONGO, FormatosVagao.RETANGULO_ABERTO, 3, FormatosCarga.QUADRADO),
-], Direcao.LESTE)
+# Função para converter os dados dos trens em formato numérico
+def converter_dados(trem):
+    direcao_numerica = 1 if trem.direcao == Direcao.LESTE else -1
 
-tremL2 = Trem(3, 3, [
-    Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_FECHADO, 2, FormatosCarga.CIRCULO),
-    Vagao(2, Comprimento.CURTO, FormatosVagao.TRAPEZIO_ABERTO, 1, FormatosCarga.RETANGULO),
-    Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.TRIANGULO),
-], Direcao.LESTE)
-
-tremL3 = Trem(3, 3, [
-    Vagao(3, Comprimento.LONGO, FormatosVagao.RETANGULO_FECHADO, 1, FormatosCarga.TRIANGULO_INVERTIDO),
-    Vagao(2, Comprimento.CURTO, FormatosVagao.HEXAGONO, 1, FormatosCarga.TRIANGULO),
-    Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.CIRCULO),
-], Direcao.LESTE)
-
-tremL4 = Trem(4, 3, [
-    Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.RETANGULO),
-    Vagao(2, Comprimento.CURTO, FormatosVagao.ELIPSE, 1, FormatosCarga.LOSANGO),
-    Vagao(2, Comprimento.CURTO, FormatosVagao.DUPLO_RETANGULO_ABERTO, 1, FormatosCarga.TRIANGULO),
-    Vagao(2, Comprimento.CURTO, FormatosVagao.TRAPEZIO_ABERTO, 1, FormatosCarga.TRIANGULO),
-], Direcao.LESTE)
-
-tremL5 = Trem(3, 3, [
-    Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_FECHADO, 1, FormatosCarga.CIRCULO),
-    Vagao(3, Comprimento.LONGO, FormatosVagao.RETANGULO_FECHADO, 1, FormatosCarga.RETANGULO),
-    Vagao(2, Comprimento.CURTO, FormatosVagao.DUPLO_RETANGULO_ABERTO, 1, FormatosCarga.TRIANGULO),
-], Direcao.LESTE)
-
-
-def converter_dados(trem: Trem):
-    # Converter a direção para -1 (oeste) ou 1 (leste)
-    direcao_numerica = trem.direcao
-
-    # Converter os atributos de cada vagão em uma lista de valores numéricos
     vagoes_numerico = []
     for vagao in trem.vagoes:
         vagoes_numerico.append([
@@ -104,27 +65,67 @@ def converter_dados(trem: Trem):
             vagao.formato_carga
         ])
 
-    # Retornar a lista de vagoes numericos e a direção numerica
     return vagoes_numerico, direcao_numerica
 
+# Função para resolver a questão 1
+def questao1(numMAX_Leste):
+    # Definição dos trens de treinamento
+    trens_treinamento = [
+        # Trens indo para leste
+        Trem(4, 4, [
+            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.CIRCULO),
+            Vagao(3, Comprimento.LONGO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.HEXAGONO),
+            Vagao(2, Comprimento.CURTO, FormatosVagao.TOPO_TRIANGULAR_FECHADO, 1, FormatosCarga.TRIANGULO),
+            Vagao(2, Comprimento.LONGO, FormatosVagao.RETANGULO_ABERTO, 3, FormatosCarga.QUADRADO),
+        ], Direcao.LESTE),
 
-# Converter os dados para o formato numérico
-vagoes_numerico_L1, direcao_numerica_L1 = converter_dados(tremL1)
-vagoes_numerico_L2, direcao_numerica_L2 = converter_dados(tremL2)
-vagoes_numerico_L3, direcao_numerica_L3 = converter_dados(tremL3)
-vagoes_numerico_L4, direcao_numerica_L4 = converter_dados(tremL4)
-vagoes_numerico_L5, direcao_numerica_L5 = converter_dados(tremL5)
+        Trem(3, 3, [
+            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_FECHADO, 2, FormatosCarga.CIRCULO),
+            Vagao(2, Comprimento.CURTO, FormatosVagao.TRAPEZIO_ABERTO, 1, FormatosCarga.RETANGULO),
+            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.TRIANGULO),
+        ], Direcao.LESTE),
 
-# Concatenar as amostras de trem
-vagoes_numerico = np.concatenate((vagoes_numerico_L1, vagoes_numerico_L2, vagoes_numerico_L3, vagoes_numerico_L4, vagoes_numerico_L5))
-direcao_numerica = [direcao_numerica_L1, direcao_numerica_L2, direcao_numerica_L3, direcao_numerica_L4, direcao_numerica_L5]
+        Trem(3, 3, [
+            Vagao(3, Comprimento.LONGO, FormatosVagao.RETANGULO_FECHADO, 1, FormatosCarga.TRIANGULO_INVERTIDO),
+            Vagao(2, Comprimento.CURTO, FormatosVagao.HEXAGONO, 1, FormatosCarga.TRIANGULO),
+            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.CIRCULO),
+        ], Direcao.LESTE),
 
-# Convertendo para arrays numpy
-vagoes_numerico = np.array(vagoes_numerico)
-direcao_numerica = np.array(direcao_numerica)
+        Trem(4, 3, [
+            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.RETANGULO),
+            Vagao(2, Comprimento.CURTO, FormatosVagao.ELIPSE, 1, FormatosCarga.LOSANGO),
+            Vagao(2, Comprimento.CURTO, FormatosVagao.DUPLO_RETANGULO_ABERTO, 1, FormatosCarga.TRIANGULO),
+            Vagao(2, Comprimento.CURTO, FormatosVagao.TRAPEZIO_ABERTO, 1, FormatosCarga.TRIANGULO),
+        ], Direcao.LESTE),
 
-# Imprimir os dados convertidos
-print("Vagoes numéricos:")
-print(vagoes_numerico)
-print("Direção numérica:")
-print(direcao_numerica)
+        Trem(3, 3, [
+            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_FECHADO, 1, FormatosCarga.CIRCULO),
+            Vagao(3, Comprimento.LONGO, FormatosVagao.RETANGULO_FECHADO, 1, FormatosCarga.RETANGULO),
+            Vagao(2, Comprimento.CURTO, FormatosVagao.DUPLO_RETANGULO_ABERTO, 1, FormatosCarga.TRIANGULO),
+        ], Direcao.LESTE),
+    ]
+
+    acuracias = []
+
+    for i in range(1, numMAX_Leste + 1):
+        # Seleciona os casos para treinamento e teste
+        casos_treinamento = []
+        casos_teste = []
+
+        for trem in trens_treinamento:
+            vagoes_numerico, direcao_numerica = converter_dados(trem)
+
+            if direcao_numerica == Direcao.LESTE:
+                casos_treinamento.append([vagoes_numerico, direcao_numerica])
+            else:
+                casos_teste.append([vagoes_numerico, direcao_numerica])
+
+        # Calcula a acurácia
+        acuracia = len(casos_teste) / numMAX_Leste
+        acuracias.append(acuracia)
+
+    return acuracias
+
+# Teste da função questao1
+acuracias = questao1(5)
+print(acuracias)
