@@ -1,3 +1,8 @@
+import numpy as np
+from keras.models import Sequential
+from keras.layers import Dense
+import random
+
 class FormatosVagao:
     RETANGULO_FECHADO = 1
     RETANGULO_ABERTO = 2
@@ -26,106 +31,94 @@ class Comprimento:
     CURTO = 1
     LONGO = 2
 
-class Vagao:
-    def __init__(self, eixos: int, comprimento: Comprimento, formato: FormatosVagao, qtd_cargas: int, formato_carga: FormatosCarga):
-        self.eixos = eixos # entre 2 e 3
-        self.comprimento = comprimento # objeto da classe Comprimento
-        self.formato = formato # atributo da classe FormatosVagao
-        self.qtd_cargas = qtd_cargas # entre 0 e 3
-        self.formato_carga = formato_carga # atribudo da class FormatosCarga
-
-        self.retangulo_proximo_retangulo = False
-        self.retangulo_proximo_triangulo = False
-        self.retangulo_proximo_hexagono = False
-        self.retangulo_proximo_circulo = False
-        self.triangulo_proximo_triangulo = False
-        self.triangulo_proximo_hexagono = False
-        self.triangulo_proximo_circulo = False
-        self.circulo_proximo_circulo = False
-
-class Trem:
-    def __init__(self, qtd_vagoes: int, qtd_cargas_dif: int, vagoes, direcao: Direcao):
-        self.qtd_vagoes = qtd_vagoes # entre 3 e 5
-        self.qtd_cargas_dif = qtd_cargas_dif # entre 1 e 4
-        self.vagoes = vagoes # objeto da classe Vagao
-        self.direcao = direcao
-
-
-# Função para converter os dados dos trens em formato numérico
-def converter_dados(trem):
-    direcao_numerica = 1 if trem.direcao == Direcao.LESTE else -1
-
-    vagoes_numerico = []
-    for vagao in trem.vagoes:
-        vagoes_numerico.append([
-            vagao.eixos,
-            vagao.comprimento,
-            vagao.formato,
-            vagao.qtd_cargas,
-            vagao.formato_carga
-        ])
-
-    return vagoes_numerico, direcao_numerica
-
-# Função para resolver a questão 1
-def questao1(numMAX_Leste):
-    # Definição dos trens de treinamento
-    trens_treinamento = [
-        # Trens indo para leste
-        Trem(4, 4, [
-            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.CIRCULO),
-            Vagao(3, Comprimento.LONGO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.HEXAGONO),
-            Vagao(2, Comprimento.CURTO, FormatosVagao.TOPO_TRIANGULAR_FECHADO, 1, FormatosCarga.TRIANGULO),
-            Vagao(2, Comprimento.LONGO, FormatosVagao.RETANGULO_ABERTO, 3, FormatosCarga.QUADRADO),
-        ], Direcao.LESTE),
-
-        Trem(3, 3, [
-            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_FECHADO, 2, FormatosCarga.CIRCULO),
-            Vagao(2, Comprimento.CURTO, FormatosVagao.TRAPEZIO_ABERTO, 1, FormatosCarga.RETANGULO),
-            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.TRIANGULO),
-        ], Direcao.LESTE),
-
-        Trem(3, 3, [
-            Vagao(3, Comprimento.LONGO, FormatosVagao.RETANGULO_FECHADO, 1, FormatosCarga.TRIANGULO_INVERTIDO),
-            Vagao(2, Comprimento.CURTO, FormatosVagao.HEXAGONO, 1, FormatosCarga.TRIANGULO),
-            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.CIRCULO),
-        ], Direcao.LESTE),
-
-        Trem(4, 3, [
-            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, 1, FormatosCarga.RETANGULO),
-            Vagao(2, Comprimento.CURTO, FormatosVagao.ELIPSE, 1, FormatosCarga.LOSANGO),
-            Vagao(2, Comprimento.CURTO, FormatosVagao.DUPLO_RETANGULO_ABERTO, 1, FormatosCarga.TRIANGULO),
-            Vagao(2, Comprimento.CURTO, FormatosVagao.TRAPEZIO_ABERTO, 1, FormatosCarga.TRIANGULO),
-        ], Direcao.LESTE),
-
-        Trem(3, 3, [
-            Vagao(2, Comprimento.CURTO, FormatosVagao.RETANGULO_FECHADO, 1, FormatosCarga.CIRCULO),
-            Vagao(3, Comprimento.LONGO, FormatosVagao.RETANGULO_FECHADO, 1, FormatosCarga.RETANGULO),
-            Vagao(2, Comprimento.CURTO, FormatosVagao.DUPLO_RETANGULO_ABERTO, 1, FormatosCarga.TRIANGULO),
-        ], Direcao.LESTE),
+# Define os casos de treinamento
+training_data = np.array([
+    [
+        [
+            [2, 1, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, FormatosCarga.CIRCULO],
+            [3, 1, Comprimento.LONGO, FormatosVagao.RETANGULO_ABERTO, FormatosCarga.HEXAGONO],
+            [2, 1, Comprimento.CURTO, FormatosVagao.TOPO_TRIANGULAR_FECHADO, FormatosCarga.TRIANGULO],
+            [2, 3, Comprimento.LONGO, FormatosVagao.RETANGULO_ABERTO, FormatosCarga.QUADRADO]
+        ],
+        [Direcao.LESTE]
+    ],
+    [
+        [
+            [2, 2, Comprimento.CURTO, FormatosVagao.RETANGULO_FECHADO, FormatosCarga.CIRCULO],
+            [2, 3, Comprimento.CURTO, FormatosVagao.TRAPEZIO_ABERTO, FormatosCarga.RETANGULO],
+            [2, 2, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, FormatosCarga.TRIANGULO],
+        ],
+        [Direcao.LESTE]
+    ],
+    [
+        [
+            [3, 1, Comprimento.LONGO, FormatosVagao.RETANGULO_FECHADO, FormatosCarga.TRIANGULO_INVERTIDO],
+            [2, 1, Comprimento.CURTO, FormatosVagao.HEXAGONO, FormatosCarga.TRIANGULO],
+            [2, 1, Comprimento.CURTO, FormatosVagao.RETANGULO_ABERTO, FormatosCarga.CIRCULO],
+        ],
+        [Direcao.LESTE]
+    ],
+    [
+        [
+            [2, 1, Comprimento.LONGO, FormatosVagao.RETANGULO_ABERTO, FormatosCarga.RETANGULO],
+            [2, 1, Comprimento.CURTO, FormatosVagao.ELIPSE, FormatosCarga.LOSANGO],
+            [2, 1, Comprimento.CURTO, FormatosVagao.DUPLO_RETANGULO_ABERTO, FormatosCarga.CIRCULO],
+            [2, 1, Comprimento.CURTO, FormatosVagao.TRAPEZIO_ABERTO, FormatosCarga.TRIANGULO],
+        ],
+        [Direcao.LESTE]
+    ],
+    [
+        [
+            [2, 1, Comprimento.CURTO, FormatosVagao.RETANGULO_FECHADO, FormatosCarga.CIRCULO],
+            [3, 1, Comprimento.LONGO, FormatosVagao.RETANGULO_FECHADO, FormatosCarga.RETANGULO],
+            [2, 1, Comprimento.CURTO, FormatosVagao.DUPLO_RETANGULO_ABERTO, FormatosCarga.TRIANGULO],
+        ],
+        [Direcao.LESTE]
     ]
+], dtype=object)
 
-    acuracias = []
+def questao1():
+    # Define a arquitetura da rede neural
+    model = Sequential()
+    model.add(Dense(20, input_shape=(None, 5), activation='relu'))  # Correção na dimensão do input_shape
+    model.add(Dense(10, activation='relu'))
+    model.add(Dense(1, activation='tanh'))
 
-    for i in range(1, numMAX_Leste + 1):
-        # Seleciona os casos para treinamento e teste
-        casos_treinamento = []
-        casos_teste = []
+    # Repete os experimentos
+    num_experiments = len(training_data)
+    accuracies = []
 
-        for trem in trens_treinamento:
-            vagoes_numerico, direcao_numerica = converter_dados(trem)
+    for i in range(num_experiments):
+        train_data = training_data[i]
+        X_train = np.array([train_data[0]])
+        y_train = np.array([train_data[1]])
 
-            if direcao_numerica == Direcao.LESTE:
-                casos_treinamento.append([vagoes_numerico, direcao_numerica])
-            else:
-                casos_teste.append([vagoes_numerico, direcao_numerica])
+        # Treina a rede neural
+        model.compile(optimizer='adam', loss='mean_squared_error')
+        model.fit(X_train, y_train, epochs=1000, verbose=0)
 
-        # Calcula a acurácia
-        acuracia = len(casos_teste) / numMAX_Leste
-        acuracias.append(acuracia)
+        # Testa a rede neural com o caso de teste atual
+        test_data = training_data[i]
+        X_test = np.array([test_data[0]])
+        y_test = np.array([test_data[1]])
+        prediction = model.predict(X_test)
 
-    return acuracias
+        accuracy = 1 if (prediction[0][0] > 0 and y_test[0][0] > 0) or (prediction[0][0] < 0 and y_test[0][0] < 0) else 0
+        accuracies.append(accuracy)
 
-# Teste da função questao1
-acuracias = questao1(5)
-print(acuracias)
+        print(f"Experimento {i + 1}:")
+        print(f"Direção esperada: {y_test[0][0]}")
+        print(f"Direção prevista: {prediction[0][0]}")
+        print("-----------------------")
+
+    # Comparação da eficácia dos testes
+    total_experiments = len(accuracies)
+    correct_predictions = sum(accuracies)
+    accuracy_percentage = (correct_predictions / total_experiments) * 100
+
+    print("Relatório de Eficácia:")
+    print(f"Total de experimentos: {total_experiments}")
+    print(f"Total de previsões corretas: {correct_predictions}")
+    print(f"Acurácia: {accuracy_percentage}%")
+
+questao1()
